@@ -5,4 +5,6 @@ Blogilista-sovelluksen frontti Fullstack Open 2019 -kurssille
 - 10.20-11.04: 44 min
 
 ## 27.4.2019
-- 13.33-
+- 13.33-14.27
+
+Blogien lisäys toimii, varmista että blogilista päivittyy.

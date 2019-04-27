@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
 import loginService from './services/login'
+import NewBlogForm from './components/NewBlogForm';
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
@@ -70,6 +71,9 @@ const App = () => {
     <div>
       <h2>Blogit</h2>
       <p>Käyttäjätunnus: {user.name}. <button type="submit" onClick={handleLogout}>Kirjaudu ulos</button></p>
+
+      <NewBlogForm />
+
       {blogs.map(blog =>
         <Blog key={blog.id} blog={blog} />
       )}
