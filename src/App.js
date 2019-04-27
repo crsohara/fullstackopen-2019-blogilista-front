@@ -15,6 +15,15 @@ const App = () => {
     )  
   }, [])
 
+  useEffect(() => {
+    const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser')
+    if (loggedUserJSON) {
+      const user = JSON.parse(loggedUserJSON)
+      setUser(user)
+      blogService.setToken(user.token)
+    }
+  }, [])
+
   const handleUsernameChange = (event) => {
     setUsername(event.target.value)
   }
@@ -30,12 +39,18 @@ const App = () => {
 				username, password,
 			})
 
+      window.localStorage.setItem('loggedBlogappUser', JSON.stringify(user))
 			blogService.setToken(user.token)
 			setUser(user)
 			setUsername('')
 			setPassword('')
 		} catch (exception) {
 		}
+  }
+
+  const handleLogout = (event) => {
+    window.localStorage.removeItem('loggedBlogappUser')
+    window.location.reload()
   }
 
   if (user === null) {
@@ -54,7 +69,7 @@ const App = () => {
   return (
     <div>
       <h2>Blogit</h2>
-      <p>Käyttäjätunnus: {user.name}.</p>
+      <p>Käyttäjätunnus: {user.name}. <button type="submit" onClick={handleLogout}>Kirjaudu ulos</button></p>
       {blogs.map(blog =>
         <Blog key={blog.id} blog={blog} />
       )}
