@@ -128,6 +128,8 @@ const App = () => {
     )
   }
 
+  blogs.sort((a, b) => b.likes - a.likes)
+  
   return (
     <div>
       <h2>Blogit</h2>
