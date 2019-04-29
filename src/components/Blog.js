@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-const Blog = ({ blog }) => {
+const Blog = ({ blog, likeButtonHandler }) => {
   const [moreVisible, setMoreVisible] = useState(null)
 
   const blogStyle = {
@@ -20,7 +20,7 @@ const Blog = ({ blog }) => {
     <div style={blogStyle}>
       <div onClick={toggleMoreVisibility}>{blog.title} {blog.author}</div>
       <div style={moreVisibilityStyle}>{blog.url}<br />
-      {blog.likes} tykkäystä <button>Tykkää</button><br />
+      {blog.likes} tykkäystä <button onClick={likeButtonHandler} >Tykkää</button><br />
       Lisäsi {blog.user.username}</div>
     </div>
 )}

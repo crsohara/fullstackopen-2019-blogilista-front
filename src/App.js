@@ -73,6 +73,30 @@ const App = () => {
     }, 2000)
   }
 
+	const handleLikeButton = async (blogId) => {
+    const likedBlog = blogs.find(blog => blog.id === blogId)
+    likedBlog.likes++
+
+    try {
+      await blogService.update(likedBlog.id, likedBlog)
+      setNotificationState({ message: `Tykättiin blogista ${likedBlog.title}.`, type: 'note' })
+      setTimeout(() => {
+        setNotificationState({...notificationState, message: null})
+      }, 4000)
+      blogs.map(blog => {
+        if (blog.id === likedBlog.id) {
+          blog.likes = likedBlog.likes
+        }
+        return blog
+      })
+    } catch (exception) {
+      setNotificationState({ message: `Blogin tykkääminen epäonnistui.`, type: 'error' })
+      setTimeout(() => {
+        setNotificationState({...notificationState, message: null})
+      }, 4000)
+    }
+   }		
+
   const newBlogFormRef = React.createRef()
 
   const newBlogForm = () => {
@@ -115,7 +139,7 @@ const App = () => {
       {newBlogForm()}
 
       {blogs.map(blog =>
-        <Blog key={blog.id} blog={blog} />
+        <Blog key={blog.id} blog={blog} likeButtonHandler={() => handleLikeButton(blog.id)} />
       )}
     </div>
   )
