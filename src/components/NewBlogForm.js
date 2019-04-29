@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import blogService from '../services/blogs'
 
-const NewBlogForm = ({blogs, setBlogs}) => {
+const NewBlogForm = ({blogs, setBlogs, notificationState, setNotificationState}) => {
 	const [title, setTitle] = useState('')
 	const [author, setAuthor] = useState('')
 	const [blogURL, setBlogURL] = useState('')
@@ -33,6 +33,11 @@ const NewBlogForm = ({blogs, setBlogs}) => {
 			setTitle('')
 			setAuthor('')
 			setBlogURL('')
+			setNotificationState({ message: `Uusi blogi lisätty: ${addedBlog.title} (${addedBlog.author}).`, type: 'note' })
+			setTimeout(() => {
+			  setNotificationState({...notificationState, message: null})
+			}, 4000)
+	  
 		}
 	}		
 
