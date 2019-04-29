@@ -11,7 +11,7 @@ const App = () => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
-	const [ notificationState, setNotificationState ] = useState({
+	const [notificationState, setNotificationState] = useState({
 		message: null,
 		type: null
 	})
@@ -83,19 +83,41 @@ const App = () => {
       setTimeout(() => {
         setNotificationState({...notificationState, message: null})
       }, 4000)
-      blogs.map(blog => {
+      const newBlogs = blogs.map(blog => {
         if (blog.id === likedBlog.id) {
           blog.likes = likedBlog.likes
         }
         return blog
       })
+      setBlogs(newBlogs)
     } catch (exception) {
-      setNotificationState({ message: `Blogin tykkääminen epäonnistui.`, type: 'error' })
+      setNotificationState({ message: `Blogin tykkääminen epäonnistui: ${exception}`, type: 'error' })
       setTimeout(() => {
         setNotificationState({...notificationState, message: null})
       }, 4000)
     }
-   }		
+  }		
+
+  const handleRemoveButton = async (blogId) => {
+    const blogToRemove = blogs.find(blog => blog.id === blogId)
+
+    window.confirm(`Haluatko varmasti poistaa blogin ${blogToRemove.title}?`)
+
+    try {
+      await blogService.deleteBlog(blogToRemove.id)
+      setNotificationState({ message: `Poistettiin blogi ${blogToRemove.title}.`, type: 'note' })
+      setTimeout(() => {
+        setNotificationState({...notificationState, message: null})
+      }, 4000)
+      const newBlogs = blogs.filter(blog => blog.id !== blogToRemove.id)
+      setBlogs(newBlogs)
+    } catch (exception) {
+      setNotificationState({ message: `Blogin poistaminen epäonnistui: ${exception}`, type: 'error' })
+      setTimeout(() => {
+        setNotificationState({...notificationState, message: null})
+      }, 4000)
+    }
+  }		
 
   const newBlogFormRef = React.createRef()
 
@@ -129,7 +151,6 @@ const App = () => {
   }
 
   blogs.sort((a, b) => b.likes - a.likes)
-  
   return (
     <div>
       <h2>Blogit</h2>
@@ -141,7 +162,12 @@ const App = () => {
       {newBlogForm()}
 
       {blogs.map(blog =>
-        <Blog key={blog.id} blog={blog} likeButtonHandler={() => handleLikeButton(blog.id)} />
+        <Blog
+          key={blog.id}
+          blog={blog}
+          likeButtonHandler={() => handleLikeButton(blog.id)}
+          removeButtonHandler={() => handleRemoveButton(blog.id)}
+          currentUser={user.username} />
       )}
     </div>
   )
