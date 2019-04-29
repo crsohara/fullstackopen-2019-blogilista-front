@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import Blog from './components/Blog'
 import NewBlogForm from './components/NewBlogForm'
 import Notification from './components/Notification'
+import Togglable from './components/Togglable'
 import blogService from './services/blogs'
 import loginService from './services/login'
 
@@ -70,7 +71,22 @@ const App = () => {
       setNotificationState({...notificationState, message: null})
     window.location.reload()
     }, 2000)
-}
+  }
+
+  const newBlogFormRef = React.createRef()
+
+  const newBlogForm = () => {
+    return (
+      <Togglable buttonLabel='Tallenna uusi blogi' ref={newBlogFormRef}>
+        <NewBlogForm
+          blogs={blogs}
+          setBlogs={setBlogs}
+          notificationState={notificationState}
+          setNotificationState={setNotificationState}
+          visibilityToggleRef={newBlogFormRef} />
+      </Togglable>
+    )
+  }
 
   if (user === null) {
     return (
@@ -96,11 +112,7 @@ const App = () => {
 
       <p>Käyttäjätunnus: {user.name}. <button type="submit" onClick={handleLogout}>Kirjaudu ulos</button></p>
 
-      <NewBlogForm
-        blogs={blogs}
-        setBlogs={setBlogs}
-        notificationState={notificationState}
-        setNotificationState={setNotificationState} />
+      {newBlogForm()}
 
       {blogs.map(blog =>
         <Blog key={blog.id} blog={blog} />
