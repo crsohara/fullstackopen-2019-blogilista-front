@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import blogService from '../services/blogs'
 import propTypes from 'prop-types'
 
-const NewBlogForm = ({blogs, setBlogs, notificationState, setNotificationState, visibilityToggleRef}) => {
+const NewBlogForm = ({ blogs, setBlogs, notificationState, setNotificationState, visibilityToggleRef }) => {
 	const [title, setTitle] = useState('')
 	const [author, setAuthor] = useState('')
 	const [blogURL, setBlogURL] = useState('')
@@ -27,7 +27,7 @@ const NewBlogForm = ({blogs, setBlogs, notificationState, setNotificationState, 
 			author: author,
 			url: blogURL,
 		}
-	
+
 		const addedBlog = await blogService.create(blogObject)
 		if (addedBlog) {
 			const newBlogs = blogs.concat(addedBlog)
@@ -37,11 +37,11 @@ const NewBlogForm = ({blogs, setBlogs, notificationState, setNotificationState, 
 			setBlogURL('')
 			setNotificationState({ message: `Uusi blogi lisätty: ${addedBlog.title} (${addedBlog.author}).`, type: 'note' })
 			setTimeout(() => {
-			  setNotificationState({...notificationState, message: null})
+				setNotificationState({ ...notificationState, message: null })
 			}, 4000)
-	  
+
 		}
-	}		
+	}
 
 	return (
 	<>
@@ -52,7 +52,7 @@ const NewBlogForm = ({blogs, setBlogs, notificationState, setNotificationState, 
 		URL <input type="text" value={blogURL} name="blogURL" onChange={handleBlogURLChange} /><br />
 		<input type="submit" value="Tallenna"/>
 	</form>
- 	</>
+	</>
 	)
 }
 

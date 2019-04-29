@@ -7,170 +7,170 @@ import blogService from './services/blogs'
 import loginService from './services/login'
 
 const App = () => {
-  const [blogs, setBlogs] = useState([])
-  const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('')
-  const [user, setUser] = useState(null)
+	const [blogs, setBlogs] = useState([])
+	const [username, setUsername] = useState('')
+	const [password, setPassword] = useState('')
+	const [user, setUser] = useState(null)
 	const [notificationState, setNotificationState] = useState({
 		message: null,
 		type: null
 	})
 
-  useEffect(() => {
-    blogService.getAll().then(blogs =>
-      setBlogs( blogs )
-    )  
-  }, [])
+	useEffect(() => {
+		blogService.getAll().then(blogs =>
+			setBlogs( blogs )
+		)
+	}, [])
 
-  useEffect(() => {
-    const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser')
-    if (loggedUserJSON) {
-      const user = JSON.parse(loggedUserJSON)
-      setUser(user)
-      blogService.setToken(user.token)
-    }
-  }, [])
+	useEffect(() => {
+		const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser')
+		if (loggedUserJSON) {
+			const user = JSON.parse(loggedUserJSON)
+			setUser(user)
+			blogService.setToken(user.token)
+		}
+	}, [])
 
-  const handleUsernameChange = (event) => {
-    setUsername(event.target.value)
-  }
+	const handleUsernameChange = (event) => {
+		setUsername(event.target.value)
+	}
 
-  const handlePasswordChange = (event) => {
-    setPassword(event.target.value)
-  }
+	const handlePasswordChange = (event) => {
+		setPassword(event.target.value)
+	}
 
-  const handleLogin = async (event) => {
-    event.preventDefault()
-    try {
+	const handleLogin = async (event) => {
+		event.preventDefault()
+		try {
 			const user = await loginService.login({
 				username, password,
 			})
 
-      window.localStorage.setItem('loggedBlogappUser', JSON.stringify(user))
+			window.localStorage.setItem('loggedBlogappUser', JSON.stringify(user))
 			blogService.setToken(user.token)
 			setUser(user)
 			setUsername('')
-      setPassword('')
-      
-      setNotificationState({ message: `Käyttäjä ${user.username} kirjautui sisään.`, type: 'note' })
-      setTimeout(() => {
-        setNotificationState({...notificationState, message: null})
-      }, 4000)
-    } catch (exception) {
-      setNotificationState({ message: `Väärä käyttäjätunnus tai salasana.`, type: 'error' })
-      setTimeout(() => {
-        setNotificationState({...notificationState, message: null})
-      }, 4000)
-    }
-  }
+			setPassword('')
 
-  const handleLogout = (event) => {
-    window.localStorage.removeItem('loggedBlogappUser')
-    setNotificationState({ message: `Käyttäjä ${user.username} kirjautui ulos.`, type: 'note' })
-    setTimeout(() => {
-      setNotificationState({...notificationState, message: null})
-    window.location.reload()
-    }, 2000)
-  }
+			setNotificationState({ message: `Käyttäjä ${user.username} kirjautui sisään.`, type: 'note' })
+			setTimeout(() => {
+				setNotificationState({ ...notificationState, message: null })
+			}, 4000)
+		} catch (exception) {
+			setNotificationState({ message: 'Väärä käyttäjätunnus tai salasana.', type: 'error' })
+			setTimeout(() => {
+				setNotificationState({ ...notificationState, message: null })
+			}, 4000)
+		}
+	}
+
+	const handleLogout = (event) => {
+		window.localStorage.removeItem('loggedBlogappUser')
+		setNotificationState({ message: `Käyttäjä ${user.username} kirjautui ulos.`, type: 'note' })
+		setTimeout(() => {
+			setNotificationState({ ...notificationState, message: null })
+			window.location.reload()
+		}, 2000)
+	}
 
 	const handleLikeButton = async (blogId) => {
-    const likedBlog = blogs.find(blog => blog.id === blogId)
-    likedBlog.likes++
+		const likedBlog = blogs.find(blog => blog.id === blogId)
+		likedBlog.likes++
 
-    try {
-      await blogService.update(likedBlog.id, likedBlog)
-      setNotificationState({ message: `Tykättiin blogista ${likedBlog.title}.`, type: 'note' })
-      setTimeout(() => {
-        setNotificationState({...notificationState, message: null})
-      }, 4000)
-      const newBlogs = blogs.map(blog => {
-        if (blog.id === likedBlog.id) {
-          blog.likes = likedBlog.likes
-        }
-        return blog
-      })
-      setBlogs(newBlogs)
-    } catch (exception) {
-      setNotificationState({ message: `Blogin tykkääminen epäonnistui: ${exception}`, type: 'error' })
-      setTimeout(() => {
-        setNotificationState({...notificationState, message: null})
-      }, 4000)
-    }
-  }		
+		try {
+			await blogService.update(likedBlog.id, likedBlog)
+			setNotificationState({ message: `Tykättiin blogista ${likedBlog.title}.`, type: 'note' })
+			setTimeout(() => {
+				setNotificationState({ ...notificationState, message: null })
+			}, 4000)
+			const newBlogs = blogs.map(blog => {
+				if (blog.id === likedBlog.id) {
+					blog.likes = likedBlog.likes
+				}
+				return blog
+			})
+			setBlogs(newBlogs)
+		} catch (exception) {
+			setNotificationState({ message: `Blogin tykkääminen epäonnistui: ${exception}`, type: 'error' })
+			setTimeout(() => {
+				setNotificationState({ ...notificationState, message: null })
+			}, 4000)
+		}
+	}
 
-  const handleRemoveButton = async (blogId) => {
-    const blogToRemove = blogs.find(blog => blog.id === blogId)
+	const handleRemoveButton = async (blogId) => {
+		const blogToRemove = blogs.find(blog => blog.id === blogId)
 
-    window.confirm(`Haluatko varmasti poistaa blogin ${blogToRemove.title}?`)
+		window.confirm(`Haluatko varmasti poistaa blogin ${blogToRemove.title}?`)
 
-    try {
-      await blogService.deleteBlog(blogToRemove.id)
-      setNotificationState({ message: `Poistettiin blogi ${blogToRemove.title}.`, type: 'note' })
-      setTimeout(() => {
-        setNotificationState({...notificationState, message: null})
-      }, 4000)
-      const newBlogs = blogs.filter(blog => blog.id !== blogToRemove.id)
-      setBlogs(newBlogs)
-    } catch (exception) {
-      setNotificationState({ message: `Blogin poistaminen epäonnistui: ${exception}`, type: 'error' })
-      setTimeout(() => {
-        setNotificationState({...notificationState, message: null})
-      }, 4000)
-    }
-  }		
+		try {
+			await blogService.deleteBlog(blogToRemove.id)
+			setNotificationState({ message: `Poistettiin blogi ${blogToRemove.title}.`, type: 'note' })
+			setTimeout(() => {
+				setNotificationState({ ...notificationState, message: null })
+			}, 4000)
+			const newBlogs = blogs.filter(blog => blog.id !== blogToRemove.id)
+			setBlogs(newBlogs)
+		} catch (exception) {
+			setNotificationState({ message: `Blogin poistaminen epäonnistui: ${exception}`, type: 'error' })
+			setTimeout(() => {
+				setNotificationState({ ...notificationState, message: null })
+			}, 4000)
+		}
+	}
 
-  const newBlogFormRef = React.createRef()
+	const newBlogFormRef = React.createRef()
 
-  const newBlogForm = () => {
-    return (
-      <Togglable buttonLabel='Tallenna uusi blogi' ref={newBlogFormRef}>
-        <NewBlogForm
-          blogs={blogs}
-          setBlogs={setBlogs}
-          notificationState={notificationState}
-          setNotificationState={setNotificationState}
-          visibilityToggleRef={newBlogFormRef} />
-      </Togglable>
-    )
-  }
+	const newBlogForm = () => {
+		return (
+			<Togglable buttonLabel='Tallenna uusi blogi' ref={newBlogFormRef}>
+				<NewBlogForm
+					blogs={blogs}
+					setBlogs={setBlogs}
+					notificationState={notificationState}
+					setNotificationState={setNotificationState}
+					visibilityToggleRef={newBlogFormRef} />
+			</Togglable>
+		)
+	}
 
-  if (user === null) {
-    return (
-      <div>
-        <h2>Kirjaudu sisään</h2>
+	if (user === null) {
+		return (
+			<div>
+				<h2>Kirjaudu sisään</h2>
 
-        <Notification state={notificationState}/>
+				<Notification state={notificationState}/>
 
-        <form onSubmit={handleLogin}>
-          Käyttäjätunnus <input type="text" value={username} name="username" onChange={handleUsernameChange} /><br />
-          Salasana <input type="password" value={password} name="password" onChange={handlePasswordChange} /><br />
-          <button type="submit">Kirjaudu</button>
-        </form>
-      </div>
-    )
-  }
+				<form onSubmit={handleLogin}>
+			Käyttäjätunnus <input type="text" value={username} name="username" onChange={handleUsernameChange} /><br />
+			Salasana <input type="password" value={password} name="password" onChange={handlePasswordChange} /><br />
+					<button type="submit">Kirjaudu</button>
+				</form>
+			</div>
+		)
+	}
 
-  blogs.sort((a, b) => b.likes - a.likes)
-  return (
-    <div>
-      <h2>Blogit</h2>
+	blogs.sort((a, b) => b.likes - a.likes)
+	return (
+		<div>
+			<h2>Blogit</h2>
 
-      <Notification state={notificationState}/>
+			<Notification state={notificationState}/>
 
-      <p>Käyttäjätunnus: {user.name}. <button type="submit" onClick={handleLogout}>Kirjaudu ulos</button></p>
+			<p>Käyttäjätunnus: {user.name}. <button type="submit" onClick={handleLogout}>Kirjaudu ulos</button></p>
 
-      {newBlogForm()}
+			{newBlogForm()}
 
-      {blogs.map(blog =>
-        <Blog
-          key={blog.id}
-          blog={blog}
-          likeButtonHandler={() => handleLikeButton(blog.id)}
-          removeButtonHandler={() => handleRemoveButton(blog.id)}
-          currentUser={user.username} />
-      )}
-    </div>
-  )
+			{blogs.map(blog =>
+				<Blog
+					key={blog.id}
+					blog={blog}
+					likeButtonHandler={() => handleLikeButton(blog.id)}
+					removeButtonHandler={() => handleRemoveButton(blog.id)}
+					currentUser={user.username} />
+			)}
+		</div>
+	)
 }
 
 export default App
