@@ -72,7 +72,9 @@ const App = () => {
       <h2>Blogit</h2>
       <p>Käyttäjätunnus: {user.name}. <button type="submit" onClick={handleLogout}>Kirjaudu ulos</button></p>
 
-      <NewBlogForm />
+      <NewBlogForm
+        blogs={blogs}
+        setBlogs={setBlogs} />
 
       {blogs.map(blog =>
         <Blog key={blog.id} blog={blog} />

@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import blogService from '../services/blogs'
 
-const NewBlogForm = (props) => {
+const NewBlogForm = ({blogs, setBlogs}) => {
 	const [title, setTitle] = useState('')
 	const [author, setAuthor] = useState('')
 	const [blogURL, setBlogURL] = useState('')
@@ -18,7 +18,7 @@ const NewBlogForm = (props) => {
 		setBlogURL(event.target.value)
 	}
 
-	const handleNewBlogSubmit = (event) => {
+	const handleNewBlogSubmit = async (event) => {
 		event.preventDefault()
 		const blogObject = {
 			title: title,
@@ -26,13 +26,14 @@ const NewBlogForm = (props) => {
 			url: blogURL,
 		}
 	
-		blogService
-			.create(blogObject)
-			.then(ret => {
-				setTitle('')
-				setAuthor('')
-				setBlogURL('')
-			})
+		const addedBlog = await blogService.create(blogObject)
+		if (addedBlog) {
+			const newBlogs = blogs.concat(addedBlog)
+			setBlogs(newBlogs)
+			setTitle('')
+			setAuthor('')
+			setBlogURL('')
+		}
 	}		
 
 	return (
