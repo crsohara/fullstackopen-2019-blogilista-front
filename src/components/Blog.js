@@ -27,8 +27,8 @@ const Blog = ({ blog, likeButtonHandler, removeButtonHandler, currentUser }) => 
 
 	return (
 		<div style={blogStyle}>
-			<div onClick={toggleMoreVisibility}>{blog.title} {blog.author}</div>
-			<div style={moreVisibilityStyle}>{blog.url}<br />
+			<div className='otsikko' onClick={toggleMoreVisibility}>{blog.title} {blog.author}</div>
+			<div className='lisätiedot' style={moreVisibilityStyle}>{blog.url}<br />
 				{blog.likes} tykkäystä <button onClick={likeButtonHandler} >Tykkää</button><br />
 			Lisäsi {blog.user.username}<br />
 				{removeButton()}</div>
