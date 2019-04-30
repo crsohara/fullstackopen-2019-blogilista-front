@@ -161,14 +161,16 @@ const App = () => {
 
 			{newBlogForm()}
 
-			{blogs.map(blog =>
-				<Blog
-					key={blog.id}
-					blog={blog}
-					likeButtonHandler={() => handleLikeButton(blog.id)}
-					removeButtonHandler={() => handleRemoveButton(blog.id)}
-					currentUser={user.username} />
-			)}
+			<div id='blogs'>
+				{blogs.map(blog =>
+					<Blog
+						key={blog.id}
+						blog={blog}
+						likeButtonHandler={() => handleLikeButton(blog.id)}
+						removeButtonHandler={() => handleRemoveButton(blog.id)}
+						currentUser={user.username} />
+				)}
+			</div>
 		</div>
 	)
 }

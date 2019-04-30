@@ -11,4 +11,5 @@ Blogilista-sovelluksen frontti Fullstack Open 2019 -kurssille
 - 8.48-10.58: 12 + 60 + 58 = 130 min
 - 13.41-14.46: 9 + 46 = 55 min
 
-5.13 osittain tehty.
+## 30.4.2019
+- 9.06 - 10.30: 84 min
