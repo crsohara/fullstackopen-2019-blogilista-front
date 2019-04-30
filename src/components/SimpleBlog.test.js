@@ -15,5 +15,9 @@ describe('<SimpleBlog />', () => {
 
 		const titleAuthor = component.container.querySelector('.titleAuthor')
 		expect(titleAuthor).toHaveTextContent('Blogin otsikko')
+		expect(titleAuthor).toHaveTextContent('Blogin tekijä')
+
+		const likes = component.container.querySelector('.likes')
+		expect(likes).toHaveTextContent(/^10$/)
 	})
 })
