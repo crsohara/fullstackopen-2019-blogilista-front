@@ -20,4 +20,28 @@ describe('<App />', () => {
 		const blogs = component.container.querySelector('#blogs')
 		expect(blogs).not.toBeInTheDocument()
 	})
+
+	test('If user is logged in, 4 blogs render', async () => {
+		const user = {
+			username: 'testuser',
+			token: '1234567890',
+			name: 'Test User',
+		}
+
+		localStorage.setItem('loggedBlogappUser', JSON.stringify(user))
+		const component = render(
+			<App />
+		)
+		component.rerender(<App />)
+
+		await waitForElement(
+			() => component.getByText('Tallenna uusi blogi')
+		)
+
+		const blogs = component.container.querySelector('#blogs')
+		expect(blogs).toBeInTheDocument()
+
+		const allBlogs = component.container.querySelectorAll('.otsikko')
+		expect(allBlogs.length).toBe(4)
+	})
 })
