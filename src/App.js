@@ -128,6 +128,13 @@ const App = () => {
 		)
 	}
 
+	/* eslint-disable no-unused-vars */
+	let reset, usernameForm, passwordForm
+
+	({ reset, ...usernameForm } = username);
+	({ reset, ...passwordForm } = password)
+	/* eslint-enable no-unused-vars */
+
 	if (user === null) {
 		return (
 			<div>
@@ -136,8 +143,8 @@ const App = () => {
 				<Notification state={notificationState}/>
 
 				<form onSubmit={handleLogin}>
-			Käyttäjätunnus <input { ...username} /><br />
-			Salasana <input {...password} /><br />
+					Käyttäjätunnus <input { ...usernameForm} /><br />
+					Salasana <input {...passwordForm} /><br />
 					<button type="submit">Kirjaudu</button>
 				</form>
 			</div>

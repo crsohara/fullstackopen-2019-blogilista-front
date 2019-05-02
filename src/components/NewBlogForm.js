@@ -4,9 +4,9 @@ import propTypes from 'prop-types'
 import { useField } from '../hooks'
 
 const NewBlogForm = ({ blogs, setBlogs, notificationState, setNotificationState, visibilityToggleRef }) => {
-	const title = useField({ type: 'text', name: 'title' })
-	const author = useField({ type: 'text', name: 'author' })
-	const blogURL = useField({ type: 'text', name: 'blogURL' })
+	const title = useField({ type: 'text', name: 'title' })
+	const author = useField({ type: 'text', name: 'author' })
+	const blogURL = useField({ type: 'text', name: 'blogURL' })
 
 	const handleNewBlogSubmit = async (event) => {
 		event.preventDefault()
@@ -32,13 +32,21 @@ const NewBlogForm = ({ blogs, setBlogs, notificationState, setNotificationState,
 		}
 	}
 
+	/* eslint-disable no-unused-vars */
+	let reset, titleForm, authorForm, blogURLForm
+
+	({ reset, ...titleForm } = title);
+	({ reset, ...authorForm } = author);
+	({ reset, ...blogURLForm } = blogURL)
+	/* eslint-enable no-unused-vars */
+
 	return (
 	<>
 	<h2>Luo uusi blogi</h2>
 	<form onSubmit={handleNewBlogSubmit}>
-		Otsikko <input { ...title } /><br />
-		Tekijä <input { ...author } /><br />
-		URL <input { ...blogURL } /><br />
+		Otsikko <input { ...titleForm } /><br />
+		Tekijä <input { ...authorForm } /><br />
+		URL <input { ...blogURLForm } /><br />
 		<input type="submit" value="Tallenna"/>
 	</form>
 	</>
