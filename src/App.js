@@ -43,6 +43,8 @@ const App = () => {
 			window.localStorage.setItem('loggedBlogappUser', JSON.stringify(user))
 			blogService.setToken(user.token)
 			setUser(user)
+			username.reset()
+			password.reset()
 
 			setNotificationState({ message: `Käyttäjä ${user.username} kirjautui sisään.`, type: 'note' })
 			setTimeout(() => {
@@ -134,7 +136,7 @@ const App = () => {
 				<Notification state={notificationState}/>
 
 				<form onSubmit={handleLogin}>
-			Käyttäjätunnus <input {...username} /><br />
+			Käyttäjätunnus <input { ...username} /><br />
 			Salasana <input {...password} /><br />
 					<button type="submit">Kirjaudu</button>
 				</form>
