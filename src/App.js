@@ -3,12 +3,11 @@ import Blog from './components/Blog'
 import NewBlogForm from './components/NewBlogForm'
 import Notification from './components/Notification'
 import Togglable from './components/Togglable'
-import blogService from './services/blogs'
 import loginService from './services/login'
-import { useField } from './hooks'
+import { useField, useResource } from './hooks'
 
 const App = () => {
-	const [blogs, setBlogs] = useState([])
+	const [blogs, blogService] = useResource('/api/blogs')
 	const username = useField({ type: 'text', name: 'username' })
 	const password = useField({ type: 'password', name: 'password' })
 	const [user, setUser] = useState(null)
@@ -16,12 +15,6 @@ const App = () => {
 		message: null,
 		type: null
 	})
-
-	useEffect(() => {
-		blogService.getAll().then(blogs =>
-			setBlogs( blogs )
-		)
-	}, [])
 
 	useEffect(() => {
 		const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser')
@@ -77,13 +70,6 @@ const App = () => {
 			setTimeout(() => {
 				setNotificationState({ ...notificationState, message: null })
 			}, 4000)
-			const newBlogs = blogs.map(blog => {
-				if (blog.id === likedBlog.id) {
-					blog.likes = likedBlog.likes
-				}
-				return blog
-			})
-			setBlogs(newBlogs)
 		} catch (exception) {
 			setNotificationState({ message: `Blogin tykkääminen epäonnistui: ${exception}`, type: 'error' })
 			setTimeout(() => {
@@ -98,13 +84,11 @@ const App = () => {
 		window.confirm(`Haluatko varmasti poistaa blogin ${blogToRemove.title}?`)
 
 		try {
-			await blogService.deleteBlog(blogToRemove.id)
+			await blogService.deleteResource(blogToRemove.id)
 			setNotificationState({ message: `Poistettiin blogi ${blogToRemove.title}.`, type: 'note' })
 			setTimeout(() => {
 				setNotificationState({ ...notificationState, message: null })
 			}, 4000)
-			const newBlogs = blogs.filter(blog => blog.id !== blogToRemove.id)
-			setBlogs(newBlogs)
 		} catch (exception) {
 			setNotificationState({ message: `Blogin poistaminen epäonnistui: ${exception}`, type: 'error' })
 			setTimeout(() => {
@@ -120,7 +104,7 @@ const App = () => {
 			<Togglable buttonLabel='Tallenna uusi blogi' ref={newBlogFormRef}>
 				<NewBlogForm
 					blogs={blogs}
-					setBlogs={setBlogs}
+					blogService={blogService}
 					notificationState={notificationState}
 					setNotificationState={setNotificationState}
 					visibilityToggleRef={newBlogFormRef} />
@@ -161,7 +145,6 @@ const App = () => {
 			<p>Käyttäjätunnus: {user.name}. <button type="submit" onClick={handleLogout}>Kirjaudu ulos</button></p>
 
 			{newBlogForm()}
-
 			<div id='blogs'>
 				{blogs.map(blog =>
 					<Blog

@@ -1,9 +1,8 @@
 import React from 'react'
-import blogService from '../services/blogs'
 import propTypes from 'prop-types'
 import { useField } from '../hooks'
 
-const NewBlogForm = ({ blogs, setBlogs, notificationState, setNotificationState, visibilityToggleRef }) => {
+const NewBlogForm = ({ blogService, notificationState, setNotificationState, visibilityToggleRef }) => {
 	const title = useField({ type: 'text', name: 'title' })
 	const author = useField({ type: 'text', name: 'author' })
 	const blogURL = useField({ type: 'text', name: 'blogURL' })
@@ -19,8 +18,6 @@ const NewBlogForm = ({ blogs, setBlogs, notificationState, setNotificationState,
 
 		const addedBlog = await blogService.create(blogObject)
 		if (addedBlog) {
-			const newBlogs = blogs.concat(addedBlog)
-			setBlogs(newBlogs)
 			title.reset()
 			author.reset()
 			blogURL.reset()
@@ -55,7 +52,7 @@ const NewBlogForm = ({ blogs, setBlogs, notificationState, setNotificationState,
 
 NewBlogForm.propTypes = {
 	blogs: propTypes.array.isRequired,
-	setBlogs: propTypes.func.isRequired,
+	blogService: propTypes.object.isRequired,
 	notificationState: propTypes.object.isRequired,
 	setNotificationState: propTypes.func.isRequired,
 	visibilityToggleRef: propTypes.object.isRequired,
