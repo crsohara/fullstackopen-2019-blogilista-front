@@ -5,11 +5,12 @@ import Notification from './components/Notification'
 import Togglable from './components/Togglable'
 import blogService from './services/blogs'
 import loginService from './services/login'
+import { useField } from './hooks'
 
 const App = () => {
 	const [blogs, setBlogs] = useState([])
-	const [username, setUsername] = useState('')
-	const [password, setPassword] = useState('')
+	const username = useField({ type: 'text', name: 'username' })
+	const password = useField({ type: 'password', name: 'password' })
 	const [user, setUser] = useState(null)
 	const [notificationState, setNotificationState] = useState({
 		message: null,
@@ -31,26 +32,17 @@ const App = () => {
 		}
 	}, [])
 
-	const handleUsernameChange = (event) => {
-		setUsername(event.target.value)
-	}
-
-	const handlePasswordChange = (event) => {
-		setPassword(event.target.value)
-	}
-
 	const handleLogin = async (event) => {
 		event.preventDefault()
 		try {
 			const user = await loginService.login({
-				username, password,
+				username: username.value,
+				password: password.value,
 			})
 
 			window.localStorage.setItem('loggedBlogappUser', JSON.stringify(user))
 			blogService.setToken(user.token)
 			setUser(user)
-			setUsername('')
-			setPassword('')
 
 			setNotificationState({ message: `Käyttäjä ${user.username} kirjautui sisään.`, type: 'note' })
 			setTimeout(() => {
@@ -142,8 +134,8 @@ const App = () => {
 				<Notification state={notificationState}/>
 
 				<form onSubmit={handleLogin}>
-			Käyttäjätunnus <input type="text" value={username} name="username" onChange={handleUsernameChange} /><br />
-			Salasana <input type="password" value={password} name="password" onChange={handlePasswordChange} /><br />
+			Käyttäjätunnus <input {...username} /><br />
+			Salasana <input {...password} /><br />
 					<button type="submit">Kirjaudu</button>
 				</form>
 			</div>
