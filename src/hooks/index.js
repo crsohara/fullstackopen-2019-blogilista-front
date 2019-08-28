@@ -1,15 +1,15 @@
-import { useState, useEffect } from 'react'
-import axios from 'axios'
+import { useState, useEffect } from "react"
+import axios from "axios"
 
 export const useField = ({ type, name }) => {
-	const [value, setValue] = useState('')
+	const [value, setValue] = useState("")
 
-	const onChange = (event) => {
+	const onChange = event => {
 		setValue(event.target.value)
 	}
 
 	const reset = () => {
-		setValue('')
+		setValue("")
 	}
 
 	return {
@@ -21,9 +21,9 @@ export const useField = ({ type, name }) => {
 	}
 }
 
-export const useResource = (baseUrl) => {
+export const useResource = baseUrl => {
 	const [resources, setResources] = useState([])
-	const [token, setToken] = useState('')
+	const [token, setToken] = useState("")
 
 	useEffect(() => {
 		async function getResources() {
@@ -31,11 +31,11 @@ export const useResource = (baseUrl) => {
 			setResources(response.data)
 		}
 		getResources()
-	}, [])
+	}, [baseUrl])
 
-	const create = async (resource) => {
+	const create = async resource => {
 		const config = {
-			headers: { Authorization: `bearer ${token}` },
+			headers: { Authorization: `bearer ${token}` }
 		}
 
 		const response = await axios.post(baseUrl, resource, config)
@@ -46,17 +46,19 @@ export const useResource = (baseUrl) => {
 
 	const update = async (id, resource) => {
 		const config = {
-			headers: { Authorization: `bearer ${token}` },
+			headers: { Authorization: `bearer ${token}` }
 		}
 		const response = await axios.put(`${baseUrl}/${id}`, resource, config)
-		const newResources = resources.filter(r => r.id !== id).concat(response.data)
+		const newResources = resources
+			.filter(r => r.id !== id)
+			.concat(response.data)
 		setResources(newResources)
 		return response.data
 	}
 
 	const deleteResource = async id => {
 		const config = {
-			headers: { Authorization: `bearer ${token}` },
+			headers: { Authorization: `bearer ${token}` }
 		}
 
 		await axios.delete(`${baseUrl}/${id}`, config)
@@ -65,10 +67,11 @@ export const useResource = (baseUrl) => {
 	}
 
 	const service = {
-		create, setToken, update, deleteResource
+		create,
+		setToken,
+		update,
+		deleteResource
 	}
 
-	return [
-		resources, service
-	]
+	return [resources, service]
 }

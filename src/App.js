@@ -1,99 +1,110 @@
-import React, { useState, useEffect } from 'react'
-import Blog from './components/Blog'
-import NewBlogForm from './components/NewBlogForm'
-import Notification from './components/Notification'
-import Togglable from './components/Togglable'
-import loginService from './services/login'
-import { useField, useResource } from './hooks'
+import React, { useState, useEffect } from "react"
+import Blog from "./components/Blog"
+import NewBlogForm from "./components/NewBlogForm"
+import Notification from "./components/Notification"
+import Togglable from "./components/Togglable"
+import loginService from "./services/login"
+import { useField, useResource } from "./hooks"
+import {
+	createNotification,
+	clearNotification
+} from "./reducers/notificationReducer"
+import { connect } from "react-redux"
+import PropTypes from "prop-types"
 
-const App = () => {
-	const [blogs, blogService] = useResource('/api/blogs')
-	const username = useField({ type: 'text', name: 'username' })
-	const password = useField({ type: 'password', name: 'password' })
+const App = props => {
+	const [blogs, blogService] = useResource("/api/blogs")
+	const username = useField({ type: "text", name: "username" })
+	const password = useField({ type: "password", name: "password" })
 	const [user, setUser] = useState(null)
-	const [notificationState, setNotificationState] = useState({
-		message: null,
-		type: null
-	})
 
 	useEffect(() => {
-		const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser')
+		const loggedUserJSON = window.localStorage.getItem("loggedBlogappUser")
 		if (loggedUserJSON) {
 			const user = JSON.parse(loggedUserJSON)
 			setUser(user)
 			blogService.setToken(user.token)
 		}
-	}, [])
+	}, [blogService])
 
-	const handleLogin = async (event) => {
+	const handleLogin = async event => {
 		event.preventDefault()
 		try {
 			const user = await loginService.login({
 				username: username.value,
-				password: password.value,
+				password: password.value
 			})
 
-			window.localStorage.setItem('loggedBlogappUser', JSON.stringify(user))
+			window.localStorage.setItem("loggedBlogappUser", JSON.stringify(user))
 			blogService.setToken(user.token)
 			setUser(user)
 			username.reset()
 			password.reset()
 
-			setNotificationState({ message: `Käyttäjä ${user.username} kirjautui sisään.`, type: 'note' })
-			setTimeout(() => {
-				setNotificationState({ ...notificationState, message: null })
-			}, 4000)
+			props.createNotification({
+				message: `Käyttäjä ${user.username} kirjautui sisään.`,
+				type: "note",
+				timeout: 4
+			})
 		} catch (exception) {
-			setNotificationState({ message: 'Väärä käyttäjätunnus tai salasana.', type: 'error' })
-			setTimeout(() => {
-				setNotificationState({ ...notificationState, message: null })
-			}, 4000)
+			props.createNotification({
+				message: "Väärä käyttäjätunnus tai salasana.",
+				type: "error",
+				timeout: 4
+			})
 		}
 	}
 
-	const handleLogout = (event) => {
-		window.localStorage.removeItem('loggedBlogappUser')
-		setNotificationState({ message: `Käyttäjä ${user.username} kirjautui ulos.`, type: 'note' })
+	const handleLogout = () => {
+		window.localStorage.removeItem("loggedBlogappUser")
+		props.createNotification({
+			message: `Käyttäjä ${user.username} kirjautui ulos.`,
+			type: "note"
+		})
 		setTimeout(() => {
-			setNotificationState({ ...notificationState, message: null })
+			props.clearNotification()
 			window.location.reload()
 		}, 2000)
 	}
 
-	const handleLikeButton = async (blogId) => {
+	const handleLikeButton = async blogId => {
 		const likedBlog = blogs.find(blog => blog.id === blogId)
 		likedBlog.likes++
 
 		try {
 			await blogService.update(likedBlog.id, likedBlog)
-			setNotificationState({ message: `Tykättiin blogista ${likedBlog.title}.`, type: 'note' })
-			setTimeout(() => {
-				setNotificationState({ ...notificationState, message: null })
-			}, 4000)
+			props.createNotification({
+				message: `Tykättiin blogista ${likedBlog.title}.`,
+				type: "note",
+				timeout: 4
+			})
 		} catch (exception) {
-			setNotificationState({ message: `Blogin tykkääminen epäonnistui: ${exception}`, type: 'error' })
-			setTimeout(() => {
-				setNotificationState({ ...notificationState, message: null })
-			}, 4000)
+			props.createNotification({
+				message: `Blogin tykkääminen epäonnistui: ${exception}`,
+				type: "error",
+				timeout: 4
+			})
 		}
 	}
 
-	const handleRemoveButton = async (blogId) => {
+	const handleRemoveButton = async blogId => {
 		const blogToRemove = blogs.find(blog => blog.id === blogId)
 
 		window.confirm(`Haluatko varmasti poistaa blogin ${blogToRemove.title}?`)
 
 		try {
 			await blogService.deleteResource(blogToRemove.id)
-			setNotificationState({ message: `Poistettiin blogi ${blogToRemove.title}.`, type: 'note' })
-			setTimeout(() => {
-				setNotificationState({ ...notificationState, message: null })
-			}, 4000)
+			props.createNotification({
+				message: `Poistettiin blogi ${blogToRemove.title}.`,
+				type: "note",
+				timeout: 4
+			})
 		} catch (exception) {
-			setNotificationState({ message: `Blogin poistaminen epäonnistui: ${exception}`, type: 'error' })
-			setTimeout(() => {
-				setNotificationState({ ...notificationState, message: null })
-			}, 4000)
+			props.createNotification({
+				message: `Blogin poistaminen epäonnistui: ${exception}`,
+				type: "error",
+				timeout: 4
+			})
 		}
 	}
 
@@ -101,22 +112,20 @@ const App = () => {
 
 	const newBlogForm = () => {
 		return (
-			<Togglable buttonLabel='Tallenna uusi blogi' ref={newBlogFormRef}>
+			<Togglable buttonLabel="Tallenna uusi blogi" ref={newBlogFormRef}>
 				<NewBlogForm
 					blogs={blogs}
 					blogService={blogService}
-					notificationState={notificationState}
-					setNotificationState={setNotificationState}
-					visibilityToggleRef={newBlogFormRef} />
+					visibilityToggleRef={newBlogFormRef}
+				/>
 			</Togglable>
 		)
 	}
 
 	/* eslint-disable no-unused-vars */
 	let reset, usernameForm, passwordForm
-
-	({ reset, ...usernameForm } = username);
-	({ reset, ...passwordForm } = password)
+	;({ reset, ...usernameForm } = username)
+	;({ reset, ...passwordForm } = password)
 	/* eslint-enable no-unused-vars */
 
 	if (user === null) {
@@ -124,11 +133,13 @@ const App = () => {
 			<div>
 				<h2>Kirjaudu sisään</h2>
 
-				<Notification state={notificationState}/>
+				<Notification />
 
 				<form onSubmit={handleLogin}>
-					Käyttäjätunnus <input { ...usernameForm} /><br />
-					Salasana <input {...passwordForm} /><br />
+					Käyttäjätunnus <input {...usernameForm} />
+					<br />
+					Salasana <input {...passwordForm} />
+					<br />
 					<button type="submit">Kirjaudu</button>
 				</form>
 			</div>
@@ -140,23 +151,44 @@ const App = () => {
 		<div>
 			<h2>Blogit</h2>
 
-			<Notification state={notificationState}/>
+			<Notification />
 
-			<p>Käyttäjätunnus: {user.name}. <button type="submit" onClick={handleLogout}>Kirjaudu ulos</button></p>
+			<p>
+				Käyttäjätunnus: {user.name}.{" "}
+				<button type="submit" onClick={handleLogout}>
+					Kirjaudu ulos
+				</button>
+			</p>
 
 			{newBlogForm()}
-			<div id='blogs'>
-				{blogs.map(blog =>
+			<div id="blogs">
+				{blogs.map(blog => (
 					<Blog
 						key={blog.id}
 						blog={blog}
 						likeButtonHandler={() => handleLikeButton(blog.id)}
 						removeButtonHandler={() => handleRemoveButton(blog.id)}
-						currentUser={user.username} />
-				)}
+						currentUser={user.username}
+					/>
+				))}
 			</div>
 		</div>
 	)
 }
 
-export default App
+const mapDispatchToProps = {
+	createNotification,
+	clearNotification
+}
+
+const ConnectedApp = connect(
+	null,
+	mapDispatchToProps
+)(App)
+
+App.propTypes = {
+	createNotification: PropTypes.func,
+	clearNotification: PropTypes.func
+}
+
+export default ConnectedApp
