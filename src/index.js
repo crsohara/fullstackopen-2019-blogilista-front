@@ -1,11 +1,9 @@
 import React from "react"
 import ReactDOM from "react-dom"
 import App from "./App"
-import { createStore } from "redux"
 import { Provider } from "react-redux"
-import notificationReducer from "./reducers/notificationReducer"
+import store from "./store"
 
-const store = createStore(notificationReducer)
 const renderApp = () => {
 	ReactDOM.render(
 		<Provider store={store}>

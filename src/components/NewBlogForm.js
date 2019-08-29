@@ -60,7 +60,6 @@ const NewBlogForm = ({
 
 NewBlogForm.propTypes = {
 	blogs: propTypes.array.isRequired,
-	blogService: propTypes.object.isRequired,
 	visibilityToggleRef: propTypes.object.isRequired,
 	createNotification: propTypes.func.isRequired
 }

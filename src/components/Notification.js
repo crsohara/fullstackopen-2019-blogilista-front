@@ -35,8 +35,9 @@ const Notification = ({ clearNotification, message, type, timeout }) => {
 
 const mapStateToProps = state => {
 	return {
-		message: state.message,
-		type: state.type
+		message: state.notification.message,
+		type: state.notification.type,
+		timeout: state.notification.timeout
 	}
 }
 
