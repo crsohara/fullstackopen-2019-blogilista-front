@@ -1,6 +1,9 @@
+const NEW_NOTIFICATION = "NEW_NOTIFICATION"
+const CLEAR_NOTIFICATION = "CLEAR_NOTIFICATION"
+
 export const createNotification = ({ message, type, timeout }) => {
 	return {
-		type: "NEW_NOTIFICATION",
+		type: NEW_NOTIFICATION,
 		data: {
 			message,
 			type,
@@ -11,7 +14,7 @@ export const createNotification = ({ message, type, timeout }) => {
 
 export const clearNotification = () => {
 	return {
-		type: "CLEAR_NOTIFICATION"
+		type: CLEAR_NOTIFICATION
 	}
 }
 
@@ -20,9 +23,9 @@ const notificationReducer = (
 	action
 ) => {
 	switch (action.type) {
-		case "NEW_NOTIFICATION":
+		case NEW_NOTIFICATION:
 			return action.data
-		case "CLEAR_NOTIFICATION":
+		case CLEAR_NOTIFICATION:
 			return { message: null, type: null, timeout: 0 }
 		default:
 			return state

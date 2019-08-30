@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react"
+import React, { useEffect } from "react"
 import Blog from "./components/Blog"
 import NewBlogForm from "./components/NewBlogForm"
 import Notification from "./components/Notification"
@@ -15,46 +15,40 @@ import {
 	likeBlog,
 	deleteBlog
 } from "./reducers/blogReducer"
+import { setUser, logOut, userFromStorage, logIn } from "./reducers/userReducer"
 import { connect } from "react-redux"
 import PropTypes from "prop-types"
 
 const App = ({
+	user,
 	blogs,
 	initializeBlogs,
 	createNotification,
-	clearNotification,
 	setToken,
 	likeBlog,
-	deleteBlog
+	deleteBlog,
+	setUser,
+	userFromStorage,
+	logOut
 }) => {
 	const username = useField({ type: "text", name: "username" })
 	const password = useField({ type: "password", name: "password" })
-	const [user, setUser] = useState(null)
 
 	useEffect(() => {
 		initializeBlogs()
 	}, [initializeBlogs])
 
 	useEffect(() => {
-		const loggedUserJSON = window.localStorage.getItem("loggedBlogappUser")
-		if (loggedUserJSON) {
-			const user = JSON.parse(loggedUserJSON)
-			setUser(user)
-			setToken(user.token)
-		}
-	}, [setToken])
+		userFromStorage()
+	}, [userFromStorage])
 
 	const handleLogin = async event => {
 		event.preventDefault()
 		try {
-			const user = await loginService.login({
+			logIn({
 				username: username.value,
 				password: password.value
 			})
-
-			window.localStorage.setItem("loggedBlogappUser", JSON.stringify(user))
-			setToken(user.token)
-			setUser(user)
 			username.reset()
 			password.reset()
 
@@ -73,15 +67,12 @@ const App = ({
 	}
 
 	const handleLogout = () => {
-		window.localStorage.removeItem("loggedBlogappUser")
+		logOut()
 		createNotification({
 			message: `Käyttäjä ${user.username} kirjautui ulos.`,
-			type: "note"
+			type: "note",
+			timeout: 4
 		})
-		setTimeout(() => {
-			clearNotification()
-			window.location.reload()
-		}, 2000)
 	}
 
 	const handleLikeButton = async blogId => {
@@ -193,13 +184,17 @@ const mapDispatchToProps = {
 	initializeBlogs,
 	setToken,
 	likeBlog,
-	deleteBlog
+	deleteBlog,
+	setUser,
+	userFromStorage,
+	logOut
 }
 
 const mapStateToProps = state => {
 	return {
 		blogs: state.blogs.blogs,
-		isFetching: state.blogs.isFetching
+		isFetching: state.blogs.isFetching,
+		user: state.user
 	}
 }
 
@@ -215,7 +210,11 @@ App.propTypes = {
 	setToken: PropTypes.func,
 	likeBlog: PropTypes.func,
 	deleteBlog: PropTypes.func,
-	blogs: PropTypes.array
+	setUser: PropTypes.func,
+	userFromStorage: PropTypes.func,
+	logOut: PropTypes.func,
+	blogs: PropTypes.array,
+	user: PropTypes.object
 }
 
 export default ConnectedApp
