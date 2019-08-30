@@ -6,6 +6,7 @@ export const RECEIVE_BLOGS = "RECEIVE_BLOGS"
 export const SET_TOKEN = "SET_TOKEN"
 export const ADD_LIKE = "ADD_LIKE"
 export const REMOVE_BLOG = "REMOVE_BLOG"
+export const ADD_BLOG = "ADD_BLOG"
 
 export const fetchBlogs = () => {
 	return {
@@ -41,6 +42,13 @@ const removeBlog = blogId => {
 	}
 }
 
+const addBlog = blog => {
+	return {
+		type: ADD_BLOG,
+		blog
+	}
+}
+
 export const likeBlog = blogId => {
 	return async (dispatch, getState) => {
 		dispatch(addLike(blogId))
@@ -59,6 +67,17 @@ export const deleteBlog = blogId => {
 		}
 		await axios.delete(`${baseUrl}/${blogId}`, config)
 		dispatch(removeBlog(blogId))
+	}
+}
+
+export const createBlog = ({ title, author, url }) => {
+	return async (dispatch, getState) => {
+		const newBlog = { title, author, url }
+		const config = {
+			headers: { Authorization: `bearer ${getState().blogs.token}` }
+		}
+		const response = await axios.post(baseUrl, newBlog, config)
+		dispatch(addBlog(response.data))
 	}
 }
 
@@ -107,6 +126,10 @@ const blogReducer = (
 		}
 		case REMOVE_BLOG: {
 			const newBlogs = state.blogs.filter(blog => blog.id !== action.blogId)
+			return Object.assign({}, state, { blogs: newBlogs })
+		}
+		case ADD_BLOG: {
+			const newBlogs = state.blogs.concat(action.blog)
 			return Object.assign({}, state, { blogs: newBlogs })
 		}
 		default:

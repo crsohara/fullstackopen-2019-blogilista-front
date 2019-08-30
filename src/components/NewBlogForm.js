@@ -1,12 +1,13 @@
 import React from "react"
 import propTypes from "prop-types"
 import { useField } from "../hooks"
-import { createNotification } from "../reducers/notificationReducer"
 import { connect } from "react-redux"
+import { createNotification } from "../reducers/notificationReducer"
+import { createBlog } from "../reducers/blogReducer"
 
 const NewBlogForm = ({
 	createNotification,
-	blogService,
+	createBlog,
 	visibilityToggleRef
 }) => {
 	const title = useField({ type: "text", name: "title" })
@@ -21,15 +22,21 @@ const NewBlogForm = ({
 			author: author.value,
 			url: blogURL.value
 		}
+		try {
+			createBlog(blogObject)
 
-		const addedBlog = await blogService.create(blogObject)
-		if (addedBlog) {
 			title.reset()
 			author.reset()
 			blogURL.reset()
 			createNotification({
-				message: `Uusi blogi lisätty: ${addedBlog.title} (${addedBlog.author}).`,
+				message: `Uusi blogi lisätty: ${blogObject.title} (${blogObject.author}).`,
 				type: "note",
+				timeout: 4
+			})
+		} catch (error) {
+			createNotification({
+				message: `Tapahtui virhe: ${error}!`,
+				type: "error",
 				timeout: 4
 			})
 		}
@@ -59,13 +66,14 @@ const NewBlogForm = ({
 }
 
 NewBlogForm.propTypes = {
-	blogs: propTypes.array.isRequired,
 	visibilityToggleRef: propTypes.object.isRequired,
-	createNotification: propTypes.func.isRequired
+	createNotification: propTypes.func.isRequired,
+	createBlog: propTypes.func.isRequired
 }
 
 const mapDispatchToProps = {
-	createNotification
+	createNotification,
+	createBlog
 }
 
 const ConnectedNewBlogForm = connect(

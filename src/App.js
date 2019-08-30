@@ -128,7 +128,7 @@ const App = ({
 	const newBlogForm = () => {
 		return (
 			<Togglable buttonLabel="Tallenna uusi blogi" ref={newBlogFormRef}>
-				<NewBlogForm blogs={blogs} visibilityToggleRef={newBlogFormRef} />
+				<NewBlogForm visibilityToggleRef={newBlogFormRef} />
 			</Togglable>
 		)
 	}
