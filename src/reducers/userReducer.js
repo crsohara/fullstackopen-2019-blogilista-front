@@ -32,7 +32,7 @@ export const logIn = credentials => {
 	}
 }
 
-const userReducer = (state = {}, action) => {
+const userReducer = (state = null, action) => {
 	switch (action.type) {
 		case USER_FROM_STORAGE: {
 			const loggedUserJSON = window.localStorage.getItem("loggedBlogappUser")

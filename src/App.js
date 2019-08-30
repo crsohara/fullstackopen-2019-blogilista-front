@@ -3,19 +3,13 @@ import Blog from "./components/Blog"
 import NewBlogForm from "./components/NewBlogForm"
 import Notification from "./components/Notification"
 import Togglable from "./components/Togglable"
-import loginService from "./services/login"
 import { useField } from "./hooks"
 import {
 	createNotification,
 	clearNotification
 } from "./reducers/notificationReducer"
-import {
-	initializeBlogs,
-	setToken,
-	likeBlog,
-	deleteBlog
-} from "./reducers/blogReducer"
-import { setUser, logOut, userFromStorage, logIn } from "./reducers/userReducer"
+import { initializeBlogs, likeBlog, deleteBlog } from "./reducers/blogReducer"
+import { logOut, userFromStorage, logIn } from "./reducers/userReducer"
 import { connect } from "react-redux"
 import PropTypes from "prop-types"
 
@@ -24,12 +18,11 @@ const App = ({
 	blogs,
 	initializeBlogs,
 	createNotification,
-	setToken,
 	likeBlog,
 	deleteBlog,
-	setUser,
 	userFromStorage,
-	logOut
+	logOut,
+	logIn
 }) => {
 	const username = useField({ type: "text", name: "username" })
 	const password = useField({ type: "password", name: "password" })
@@ -49,17 +42,16 @@ const App = ({
 				username: username.value,
 				password: password.value
 			})
-			username.reset()
-			password.reset()
-
 			createNotification({
-				message: `Käyttäjä ${user.username} kirjautui sisään.`,
+				message: `Käyttäjä ${username.value} kirjautui sisään.`,
 				type: "note",
 				timeout: 4
 			})
+			username.reset()
+			password.reset()
 		} catch (exception) {
 			createNotification({
-				message: "Väärä käyttäjätunnus tai salasana.",
+				message: `Väärä käyttäjätunnus tai salasana. ${exception}`,
 				type: "error",
 				timeout: 4
 			})
@@ -182,12 +174,11 @@ const mapDispatchToProps = {
 	createNotification,
 	clearNotification,
 	initializeBlogs,
-	setToken,
 	likeBlog,
 	deleteBlog,
-	setUser,
 	userFromStorage,
-	logOut
+	logOut,
+	logIn
 }
 
 const mapStateToProps = state => {
@@ -207,12 +198,11 @@ App.propTypes = {
 	createNotification: PropTypes.func,
 	clearNotification: PropTypes.func,
 	initializeBlogs: PropTypes.func,
-	setToken: PropTypes.func,
 	likeBlog: PropTypes.func,
 	deleteBlog: PropTypes.func,
-	setUser: PropTypes.func,
 	userFromStorage: PropTypes.func,
 	logOut: PropTypes.func,
+	logIn: PropTypes.func,
 	blogs: PropTypes.array,
 	user: PropTypes.object
 }

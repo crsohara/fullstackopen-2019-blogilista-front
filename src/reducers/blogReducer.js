@@ -54,7 +54,7 @@ export const likeBlog = blogId => {
 		dispatch(addLike(blogId))
 		const blogToUpdate = getState().blogs.blogs.find(blog => blog.id === blogId)
 		const config = {
-			headers: { Authorization: `bearer ${getState().blogs.token}` }
+			headers: { Authorization: `bearer ${getState().user.token}` }
 		}
 		await axios.put(`${baseUrl}/${blogId}`, blogToUpdate, config)
 	}
@@ -63,7 +63,7 @@ export const likeBlog = blogId => {
 export const deleteBlog = blogId => {
 	return async (dispatch, getState) => {
 		const config = {
-			headers: { Authorization: `bearer ${getState().blogs.token}` }
+			headers: { Authorization: `bearer ${getState().user.token}` }
 		}
 		await axios.delete(`${baseUrl}/${blogId}`, config)
 		dispatch(removeBlog(blogId))
@@ -74,7 +74,7 @@ export const createBlog = ({ title, author, url }) => {
 	return async (dispatch, getState) => {
 		const newBlog = { title, author, url }
 		const config = {
-			headers: { Authorization: `bearer ${getState().blogs.token}` }
+			headers: { Authorization: `bearer ${getState().user.token}` }
 		}
 		const response = await axios.post(baseUrl, newBlog, config)
 		dispatch(addBlog(response.data))
@@ -102,10 +102,7 @@ export const initializeBlogs = () => {
 	}
 }
 
-const blogReducer = (
-	state = { isFetching: false, blogs: [], token: "" },
-	action
-) => {
+const blogReducer = (state = { isFetching: false, blogs: [] }, action) => {
 	switch (action.type) {
 		case REQUEST_BLOGS:
 			return Object.assign({}, state, { isFetching: true })
@@ -114,8 +111,6 @@ const blogReducer = (
 				isFetching: false,
 				blogs: action.blogs
 			})
-		case SET_TOKEN:
-			return Object.assign({}, state, { token: action.token })
 		case ADD_LIKE: {
 			const likedBlog = state.blogs.find(blog => blog.id === action.blogId)
 			likedBlog.likes++
