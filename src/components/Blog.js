@@ -70,6 +70,8 @@ const Blog = ({
 		) : null
 	}
 
+	const comments = blog.comments.map(c => <li key={c.id}>{c.comment}</li>)
+
 	return (
 		<div style={blogStyle}>
 			<div className="otsikko">
@@ -84,6 +86,10 @@ const Blog = ({
 				Lisäsi {blog.user.username}
 				<br />
 				{removeButton()}
+			</div>
+			<div>
+				<h3>Kommentit</h3>
+				<ul>{comments}</ul>
 			</div>
 		</div>
 	)
