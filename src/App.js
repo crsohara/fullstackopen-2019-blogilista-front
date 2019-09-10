@@ -3,9 +3,9 @@ import { BrowserRouter as Router, Route } from "react-router-dom"
 import Blogs from "./views/Blogs"
 import Users from "./views/Users"
 import Notification from "./components/Notification"
-import Login from "./components/Login"
 import User from "./components/User"
 import Blog from "./components/Blog"
+import Navigation from "./components/Navigation"
 import { initializeBlogs } from "./reducers/blogReducer"
 import { userFromStorage } from "./reducers/loginReducer"
 import { connect } from "react-redux"
@@ -21,17 +21,15 @@ const App = ({ initializeBlogs, userFromStorage }) => {
 	}, [userFromStorage])
 
 	return (
-		<div>
+		<Router>
+			<Navigation />
 			<h1>Blogilista</h1>
 			<Notification />
-			<Login />
-			<Router>
-				<Route exact path="/" render={() => <Blogs />} />
-				<Route exact path="/users" render={() => <Users />} />
-				<Route exact path="/users/:id" component={User} />
-				<Route exact path="/blogs/:id" component={Blog} />
-			</Router>
-		</div>
+			<Route exact path="/" render={() => <Blogs />} />
+			<Route exact path="/users" render={() => <Users />} />
+			<Route exact path="/users/:id" component={User} />
+			<Route exact path="/blogs/:id" component={Blog} />
+		</Router>
 	)
 }
 

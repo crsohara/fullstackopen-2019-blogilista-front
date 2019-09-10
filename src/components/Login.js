@@ -50,21 +50,19 @@ const Login = ({ user, createNotification, logOut, logIn }) => {
 		return (
 			<form onSubmit={handleLogin}>
 				Käyttäjätunnus <input {...usernameForm} />
-				<br />
 				Salasana <input {...passwordForm} />
-				<br />
 				<button type="submit">Kirjaudu</button>
 			</form>
 		)
 	}
 
 	return (
-		<p>
+		<span>
 			Käyttäjätunnus: {user.name}.{" "}
 			<button type="submit" onClick={handleLogout}>
 				Kirjaudu ulos
 			</button>
-		</p>
+		</span>
 	)
 }
 
