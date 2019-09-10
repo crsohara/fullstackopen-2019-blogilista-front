@@ -1,11 +1,14 @@
 import React from "react"
 import propTypes from "prop-types"
+import { Link } from "react-router-dom"
 
 const UserList = ({ users }) => {
 	const userList = users.map(user => {
 		return (
 			<tr key={user.id}>
-				<td>{user.name}</td>
+				<td>
+					<Link to={{ pathname: `/users/${user.id}` }}>{user.name}</Link>
+				</td>
 				<td>{user.blogs.length}</td>
 			</tr>
 		)

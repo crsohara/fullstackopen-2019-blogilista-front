@@ -4,6 +4,7 @@ import Blogs from "./views/Blogs"
 import Users from "./views/Users"
 import Notification from "./components/Notification"
 import Login from "./components/Login"
+import User from "./components/User"
 import { initializeBlogs } from "./reducers/blogReducer"
 import { userFromStorage } from "./reducers/loginReducer"
 import { connect } from "react-redux"
@@ -26,6 +27,7 @@ const App = ({ initializeBlogs, userFromStorage }) => {
 			<Router>
 				<Route exact path="/" render={() => <Blogs />} />
 				<Route exact path="/users" render={() => <Users />} />
+				<Route exact path="/users/:id" component={User} />
 			</Router>
 		</div>
 	)
