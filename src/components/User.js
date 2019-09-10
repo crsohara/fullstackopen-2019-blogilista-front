@@ -1,6 +1,7 @@
 import React, { useEffect } from "react"
 import { connect } from "react-redux"
 import PropTypes from "prop-types"
+import { Link } from "react-router-dom"
 import { initializeUsers } from "../reducers/userReducer"
 
 const User = ({ initializeUsers, user }) => {
@@ -10,7 +11,11 @@ const User = ({ initializeUsers, user }) => {
 
 	if (user === undefined) return <h2>Ladataan...</h2>
 
-	const addedBlogs = user.blogs.map(blog => <li key={blog.id}>{blog.title}</li>)
+	const addedBlogs = user.blogs.map(blog => (
+		<li key={blog.id}>
+			<Link to={{ pathname: `/blogs/${blog.id}` }}>{blog.title}</Link>
+		</li>
+	))
 	return (
 		<div>
 			<h2>{user.name}</h2>
