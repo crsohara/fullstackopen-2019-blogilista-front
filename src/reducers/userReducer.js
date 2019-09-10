@@ -1,54 +1,52 @@
 import axios from "axios"
-const baseUrl = "/api/login"
+const baseUrl = "/api/users"
 
-const SET_USER = "SET_USER"
-const USER_FROM_STORAGE = "USER_FROM_STORAGE"
-const LOG_OUT = "LOG_OUT"
+export const REQUEST_USERS = "REQUEST_USERS"
+export const RECEIVE_USERS = "RECEIVE_USERS"
 
-export const setUser = user => {
+export const fetchUsers = () => {
 	return {
-		type: SET_USER,
-		user
+		type: REQUEST_USERS
 	}
 }
 
-export const logOut = () => {
+export const receiveUsers = users => {
 	return {
-		type: LOG_OUT
+		type: RECEIVE_USERS,
+		users
 	}
 }
 
-export const userFromStorage = () => {
-	return {
-		type: USER_FROM_STORAGE
+const shouldFetchUsers = state => {
+	const users = state.users
+	if (users.users.length < 1) {
+		return true
+	} else if (users.isFetching) {
+		return false
+	}
+	return false
+}
+
+export const initializeUsers = () => {
+	return async (dispatch, getState) => {
+		if (shouldFetchUsers(getState())) {
+			dispatch(fetchUsers())
+			const response = await axios.get(baseUrl)
+			const users = response.data
+			dispatch(receiveUsers(users))
+		}
 	}
 }
 
-export const logIn = credentials => {
-	return async dispatch => {
-		const response = await axios.post(baseUrl, credentials)
-		const user = response.data
-		dispatch(setUser(user))
-	}
-}
-
-const userReducer = (state = null, action) => {
+const userReducer = (state = { isFetching: false, users: [] }, action) => {
 	switch (action.type) {
-		case USER_FROM_STORAGE: {
-			const loggedUserJSON = window.localStorage.getItem("loggedBlogappUser")
-			return loggedUserJSON ? JSON.parse(loggedUserJSON) : state
-		}
-		case SET_USER: {
-			window.localStorage.setItem(
-				"loggedBlogappUser",
-				JSON.stringify(action.user)
-			)
-			return action.user
-		}
-		case LOG_OUT: {
-			window.localStorage.removeItem("loggedBlogappUser")
-			return null
-		}
+		case REQUEST_USERS:
+			return Object.assign({}, state, { isFetching: true })
+		case RECEIVE_USERS:
+			return Object.assign({}, state, {
+				isFetching: false,
+				users: action.users
+			})
 		default:
 			return state
 	}
