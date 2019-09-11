@@ -2,8 +2,14 @@ import React, { useEffect } from "react"
 import { connect } from "react-redux"
 import PropTypes from "prop-types"
 import { Redirect } from "react-router-dom"
-import { initializeBlogs, likeBlog, deleteBlog } from "../reducers/blogReducer"
+import {
+	initializeBlogs,
+	likeBlog,
+	deleteBlog,
+	createComment
+} from "../reducers/blogReducer"
 import { createNotification } from "../reducers/notificationReducer"
+import { useField } from "../hooks"
 
 const Blog = ({
 	match,
@@ -11,6 +17,7 @@ const Blog = ({
 	user,
 	likeBlog,
 	deleteBlog,
+	createComment,
 	createNotification,
 	initializeBlogs
 }) => {
@@ -18,9 +25,35 @@ const Blog = ({
 		initializeBlogs()
 	}, [initializeBlogs])
 
+	const comment = useField({ type: "text", name: "comment" })
+
+	/* eslint-disable no-unused-vars */
+	let reset, commentForm
+	;({ reset, ...commentForm } = comment)
+	/* eslint-enable no-unused-vars */
+
 	const blog = blogs.find(b => b.id === match.params.id)
 	if (blog === undefined && blogs.length > 0) return <Redirect to="/" />
 	if (blog === undefined) return <h2>Ladataan...</h2>
+
+	const addComment = async event => {
+		event.preventDefault()
+		try {
+			createComment({ comment: comment.value, blogId: blog.id })
+			createNotification({
+				message: `Lisättiin kommentti "${comment.value}".`,
+				type: "note",
+				timeout: 4
+			})
+			comment.reset()
+		} catch (exception) {
+			createNotification({
+				message: `Kommentointi epäonnistui: ${exception}`,
+				type: "error",
+				timeout: 4
+			})
+		}
+	}
 
 	const handleLikeButton = () => {
 		try {
@@ -89,6 +122,10 @@ const Blog = ({
 			</div>
 			<div>
 				<h3>Kommentit</h3>
+				<form onSubmit={addComment}>
+					<input {...commentForm} />
+					<button type="submit">Kommentoi</button>
+				</form>
 				<ul>{comments}</ul>
 			</div>
 		</div>
@@ -99,7 +136,8 @@ const mapDispatchToProps = {
 	createNotification,
 	initializeBlogs,
 	likeBlog,
-	deleteBlog
+	deleteBlog,
+	createComment
 }
 
 const mapStateToProps = state => {
@@ -119,6 +157,7 @@ Blog.propTypes = {
 	initializeBlogs: PropTypes.func,
 	likeBlog: PropTypes.func,
 	deleteBlog: PropTypes.func,
+	createComment: PropTypes.func,
 	user: PropTypes.object,
 	blogs: PropTypes.array,
 	match: PropTypes.object

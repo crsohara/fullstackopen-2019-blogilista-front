@@ -7,6 +7,7 @@ export const SET_TOKEN = "SET_TOKEN"
 export const ADD_LIKE = "ADD_LIKE"
 export const REMOVE_BLOG = "REMOVE_BLOG"
 export const ADD_BLOG = "ADD_BLOG"
+export const ADD_COMMENT = "ADD_COMMENT"
 
 export const fetchBlogs = () => {
 	return {
@@ -49,6 +50,14 @@ const addBlog = blog => {
 	}
 }
 
+const addComment = (comment, blogId) => {
+	return {
+		type: ADD_COMMENT,
+		comment,
+		blogId
+	}
+}
+
 export const likeBlog = blogId => {
 	return async (dispatch, getState) => {
 		dispatch(addLike(blogId))
@@ -78,6 +87,21 @@ export const createBlog = ({ title, author, url }) => {
 		}
 		const response = await axios.post(baseUrl, newBlog, config)
 		dispatch(addBlog(response.data))
+	}
+}
+
+export const createComment = ({ comment, blogId }) => {
+	return async (dispatch, getState) => {
+		const newComment = { comment }
+		const config = {
+			headers: { Authorization: `bearer ${getState().user.token}` }
+		}
+		const response = await axios.post(
+			`${baseUrl}/${blogId}/comments`,
+			newComment,
+			config
+		)
+		dispatch(addComment(response.data, blogId))
 	}
 }
 
@@ -116,6 +140,14 @@ const blogReducer = (state = { isFetching: false, blogs: [] }, action) => {
 			likedBlog.likes++
 			const newBlogs = state.blogs.map(blog =>
 				blog.id === likedBlog.id ? likedBlog : blog
+			)
+			return Object.assign({}, state, { blogs: newBlogs })
+		}
+		case ADD_COMMENT: {
+			const commentedBlog = state.blogs.find(blog => blog.id === action.blogId)
+			commentedBlog.comments.push(action.comment)
+			const newBlogs = state.blogs.map(blog =>
+				blog.id === commentedBlog.id ? commentedBlog : blog
 			)
 			return Object.assign({}, state, { blogs: newBlogs })
 		}
