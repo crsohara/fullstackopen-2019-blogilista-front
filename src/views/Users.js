@@ -1,5 +1,6 @@
 import React, { useEffect } from "react"
 import { connect } from "react-redux"
+import Typography from "@material-ui/core/Typography"
 import { initializeUsers } from "../reducers/userReducer"
 import PropTypes from "prop-types"
 import UserList from "../components/UserList"
@@ -11,7 +12,9 @@ const Users = ({ initializeUsers, users }) => {
 
 	return (
 		<div>
-			<h2>Käyttäjät</h2>
+			<Typography variant="h2" gutterBottom>
+				Käyttäjät
+			</Typography>
 			<UserList users={users} />
 		</div>
 	)

@@ -2,6 +2,7 @@ import React, { useEffect } from "react"
 import { connect } from "react-redux"
 import PropTypes from "prop-types"
 import { Link } from "react-router-dom"
+import Typography from "@material-ui/core/Typography"
 import { initializeUsers } from "../reducers/userReducer"
 
 const User = ({ initializeUsers, user }) => {
@@ -9,17 +10,24 @@ const User = ({ initializeUsers, user }) => {
 		initializeUsers()
 	}, [initializeUsers])
 
-	if (user === undefined) return <h2>Ladataan...</h2>
+	if (user === undefined)
+		return <Typography variant="h2">Ladataan...</Typography>
 
 	const addedBlogs = user.blogs.map(blog => (
 		<li key={blog.id}>
-			<Link to={{ pathname: `/blogs/${blog.id}` }}>{blog.title}</Link>
+			<Link to={{ pathname: `/blogs/${blog.id}` }}>
+				<Typography>{blog.title}</Typography>
+			</Link>
 		</li>
 	))
 	return (
 		<div>
-			<h2>{user.name}</h2>
-			<h3>Lisätyt blogit</h3>
+			<Typography variant="h2" gutterBottom>
+				{user.name}
+			</Typography>
+			<Typography variant="h3" gutterBottom>
+				Lisätyt blogit
+			</Typography>
 
 			<ul>{addedBlogs}</ul>
 		</div>

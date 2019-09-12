@@ -2,6 +2,8 @@ import React, { useEffect } from "react"
 import { connect } from "react-redux"
 import PropTypes from "prop-types"
 import { Redirect } from "react-router-dom"
+import Typography from "@material-ui/core/Typography"
+import Button from "@material-ui/core/Button"
 import {
 	initializeBlogs,
 	likeBlog,
@@ -103,25 +105,38 @@ const Blog = ({
 		) : null
 	}
 
-	const comments = blog.comments.map(c => <li key={c.id}>{c.comment}</li>)
+	const comments = blog.comments.map(c => (
+		<li key={c.id}>
+			<Typography>{c.comment}</Typography>
+		</li>
+	))
 
 	return (
 		<div style={blogStyle}>
 			<div className="otsikko">
-				{blog.title} {blog.author}
+				<Typography variant="h3" gutterBottom>
+					{blog.title}
+				</Typography>
+				<Typography gutterBottom>– {blog.author}</Typography>
 			</div>
 			<div className="lisätiedot">
-				{blog.url}
-				<br />
-				{blog.likes} tykkäystä{" "}
-				<button onClick={handleLikeButton}>Tykkää</button>
-				<br />
-				Lisäsi {blog.user.username}
-				<br />
-				{removeButton()}
+				<Typography gutterBottom>
+					{blog.url}
+					<br />
+					{blog.likes} tykkäystä{" "}
+					<Button color="primary" onClick={handleLikeButton}>
+						Tykkää
+					</Button>
+					<br />
+					Lisäsi {blog.user.username}
+					<br />
+					{removeButton()}
+				</Typography>
 			</div>
 			<div>
-				<h3>Kommentit</h3>
+				<Typography variant="h4" gutterBottom>
+					Kommentit
+				</Typography>
 				<form onSubmit={addComment}>
 					<input {...commentForm} />
 					<button type="submit">Kommentoi</button>

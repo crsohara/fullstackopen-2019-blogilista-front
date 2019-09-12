@@ -63,7 +63,7 @@ export const likeBlog = blogId => {
 		dispatch(addLike(blogId))
 		const blogToUpdate = getState().blogs.blogs.find(blog => blog.id === blogId)
 		const config = {
-			headers: { Authorization: `bearer ${getState().user.token}` }
+			headers: { Authorization: `bearer ${getState().user.user.token}` }
 		}
 		await axios.put(`${baseUrl}/${blogId}`, blogToUpdate, config)
 	}
@@ -72,7 +72,7 @@ export const likeBlog = blogId => {
 export const deleteBlog = blogId => {
 	return async (dispatch, getState) => {
 		const config = {
-			headers: { Authorization: `bearer ${getState().user.token}` }
+			headers: { Authorization: `bearer ${getState().user.user.token}` }
 		}
 		await axios.delete(`${baseUrl}/${blogId}`, config)
 		dispatch(removeBlog(blogId))
@@ -83,7 +83,7 @@ export const createBlog = ({ title, author, url }) => {
 	return async (dispatch, getState) => {
 		const newBlog = { title, author, url }
 		const config = {
-			headers: { Authorization: `bearer ${getState().user.token}` }
+			headers: { Authorization: `bearer ${getState().user.user.token}` }
 		}
 		const response = await axios.post(baseUrl, newBlog, config)
 		dispatch(addBlog(response.data))
@@ -94,7 +94,7 @@ export const createComment = ({ comment, blogId }) => {
 	return async (dispatch, getState) => {
 		const newComment = { comment }
 		const config = {
-			headers: { Authorization: `bearer ${getState().user.token}` }
+			headers: { Authorization: `bearer ${getState().user.user.token}` }
 		}
 		const response = await axios.post(
 			`${baseUrl}/${blogId}/comments`,
