@@ -7,35 +7,31 @@ import User from "./components/User"
 import Blog from "./components/Blog"
 import Navigation from "./components/Navigation"
 import { initializeBlogs } from "./reducers/blogReducer"
-import { userFromStorage } from "./reducers/loginReducer"
 import { connect } from "react-redux"
 import PropTypes from "prop-types"
+import Container from "@material-ui/core/Container"
 
-const App = ({ initializeBlogs, userFromStorage }) => {
+const App = ({ initializeBlogs }) => {
 	useEffect(() => {
 		initializeBlogs()
 	}, [initializeBlogs])
 
-	useEffect(() => {
-		userFromStorage()
-	}, [userFromStorage])
-
 	return (
 		<Router>
 			<Navigation />
-			<h1>Blogilista</h1>
-			<Notification />
-			<Route exact path="/" render={() => <Blogs />} />
-			<Route exact path="/users" render={() => <Users />} />
-			<Route exact path="/users/:id" component={User} />
-			<Route exact path="/blogs/:id" component={Blog} />
+			<Container>
+				<Notification />
+				<Route exact path="/" render={() => <Blogs />} />
+				<Route exact path="/users" render={() => <Users />} />
+				<Route exact path="/users/:id" component={User} />
+				<Route exact path="/blogs/:id" component={Blog} />
+			</Container>
 		</Router>
 	)
 }
 
 const mapDispatchToProps = {
-	initializeBlogs,
-	userFromStorage
+	initializeBlogs
 }
 
 const ConnectedApp = connect(
@@ -44,8 +40,7 @@ const ConnectedApp = connect(
 )(App)
 
 App.propTypes = {
-	initializeBlogs: PropTypes.func,
-	userFromStorage: PropTypes.func
+	initializeBlogs: PropTypes.func
 }
 
 export default ConnectedApp

@@ -1,13 +1,46 @@
-import React from "react"
+import React, { useEffect } from "react"
 import { connect } from "react-redux"
 import PropTypes from "prop-types"
+import Typography from "@material-ui/core/Typography"
+import Button from "@material-ui/core/Button"
+import { makeStyles } from "@material-ui/styles"
 import { createNotification } from "../reducers/notificationReducer"
-import { logOut, logIn } from "../reducers/loginReducer"
+import { logIn, logOut } from "../reducers/loginReducer"
+import DialogLoginForm from "../components/DialogLoginForm"
 import { useField } from "../hooks"
 
+const useStyles = makeStyles({
+	username: {
+		textTransform: "uppercase",
+		fontSize: "0.875rem",
+		fontWeight: 500,
+		letterSpacing: "0.02857em",
+		paddingRight: 20
+	}
+})
+
 const Login = ({ user, createNotification, logOut, logIn }) => {
+	const classes = useStyles()
+
 	const username = useField({ type: "text", name: "username" })
 	const password = useField({ type: "password", name: "password" })
+
+	useEffect(() => {
+		if (user.user) {
+			createNotification({
+				message: `Käyttäjä ${user.user.username} kirjautui sisään.`,
+				type: "note",
+				timeout: 4
+			})
+		}
+		if (user.error) {
+			createNotification({
+				message: `Ongelma: ${user.error}.`,
+				type: "error",
+				timeout: 4
+			})
+		}
+	}, [user, createNotification])
 
 	/* eslint-disable no-unused-vars */
 	let reset, usernameForm, passwordForm
@@ -17,52 +50,58 @@ const Login = ({ user, createNotification, logOut, logIn }) => {
 
 	const handleLogin = async event => {
 		event.preventDefault()
-		try {
-			logIn({
-				username: username.value,
-				password: password.value
-			})
-			createNotification({
-				message: `Käyttäjä ${username.value} kirjautui sisään.`,
-				type: "note",
-				timeout: 4
-			})
-			username.reset()
-			password.reset()
-		} catch (exception) {
-			createNotification({
-				message: `Väärä käyttäjätunnus tai salasana. ${exception}`,
-				type: "error",
-				timeout: 4
-			})
-		}
+		logIn({
+			username: username.value,
+			password: password.value
+		})
+		username.reset()
+		password.reset()
+		handleClose()
 	}
 
 	const handleLogout = () => {
 		logOut()
 		createNotification({
-			message: `Käyttäjä ${user.username} kirjautui ulos.`,
+			message: `Käyttäjä ${user.user.username} kirjautui ulos.`,
 			type: "note",
 			timeout: 4
 		})
 	}
-	if (user === null) {
+
+	const [open, setOpen] = React.useState(false)
+
+	function handleClickOpen() {
+		setOpen(true)
+	}
+
+	const handleClose = () => {
+		setOpen(false)
+	}
+
+	if (user.user === null) {
 		return (
-			<form onSubmit={handleLogin}>
-				Käyttäjätunnus <input {...usernameForm} />
-				Salasana <input {...passwordForm} />
-				<button type="submit">Kirjaudu</button>
-			</form>
+			<>
+				<Button variant="outlined" color="inherit" onClick={handleClickOpen}>
+					Kirjaudu sisään
+				</Button>
+				<DialogLoginForm
+					open={open}
+					onClose={handleClose}
+					handleLogin={handleLogin}
+					usernameForm={usernameForm}
+					passwordForm={passwordForm}
+				/>
+			</>
 		)
 	}
 
 	return (
-		<span>
-			Käyttäjätunnus: {user.name}.{" "}
-			<button type="submit" onClick={handleLogout}>
+		<Typography>
+			<span className={classes.username}>{user.user.name}</span>
+			<Button color="inherit" type="submit" onClick={handleLogout}>
 				Kirjaudu ulos
-			</button>
-		</span>
+			</Button>
+		</Typography>
 	)
 }
 
@@ -84,9 +123,9 @@ const ConnectedLogin = connect(
 )(Login)
 
 Login.propTypes = {
-	createNotification: PropTypes.func,
-	logIn: PropTypes.func,
-	logOut: PropTypes.func,
+	createNotification: PropTypes.func.isRequired,
+	logIn: PropTypes.func.isRequired,
+	logOut: PropTypes.func.isRequired,
 	user: PropTypes.object
 }
 

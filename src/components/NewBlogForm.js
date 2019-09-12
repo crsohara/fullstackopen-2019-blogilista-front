@@ -1,7 +1,9 @@
 import React from "react"
-import propTypes from "prop-types"
-import { useField } from "../hooks"
 import { connect } from "react-redux"
+import propTypes from "prop-types"
+import Input from "@material-ui/core/Input"
+import Typography from "@material-ui/core/Typography"
+import { useField } from "../hooks"
 import { createNotification } from "../reducers/notificationReducer"
 import { createBlog } from "../reducers/blogReducer"
 
@@ -51,15 +53,16 @@ const NewBlogForm = ({
 
 	return (
 		<>
-			<h2>Luo uusi blogi</h2>
+			<Typography variant="h3">Luo uusi blogi</Typography>
 			<form onSubmit={handleNewBlogSubmit}>
-				Otsikko <input {...titleForm} />
+				<Typography>Otsikko </Typography>
+				<Input {...titleForm} />
 				<br />
-				Tekijä <input {...authorForm} />
+				<Typography>Tekijä</Typography> <Input {...authorForm} />
 				<br />
-				URL <input {...blogURLForm} />
+				<Typography>URL</Typography> <Input {...blogURLForm} />
 				<br />
-				<input type="submit" value="Tallenna" />
+				<Input type="submit" value="Tallenna" />
 			</form>
 		</>
 	)

@@ -2,6 +2,9 @@ import React from "react"
 import { connect } from "react-redux"
 import PropTypes from "prop-types"
 import { Link } from "react-router-dom"
+import Typography from "@material-ui/core/Typography"
+import List from "@material-ui/core/List"
+import ListItem from "@material-ui/core/ListItem"
 import Togglable from "../components/Togglable"
 import NewBlogForm from "../components/NewBlogForm"
 import { initializeBlogs } from "../reducers/blogReducer"
@@ -20,19 +23,23 @@ const Blogs = ({ blogs }) => {
 	blogs.sort((a, b) => b.likes - a.likes)
 	return (
 		<>
-			<h2>Blogit</h2>
+			<Typography variant="h2" gutterBottom>
+				Blogit
+			</Typography>
 
 			{newBlogForm()}
 
-			<ul id="blogs">
+			<List id="blogs">
 				{blogs.map(blog => {
 					return (
-						<li key={blog.id}>
-							<Link to={{ pathname: `/blogs/${blog.id}` }}>{blog.title}</Link>
-						</li>
+						<ListItem key={blog.id}>
+							<Link to={{ pathname: `/blogs/${blog.id}` }}>
+								<Typography>{blog.title}</Typography>
+							</Link>
+						</ListItem>
 					)
 				})}
-			</ul>
+			</List>
 		</>
 	)
 }

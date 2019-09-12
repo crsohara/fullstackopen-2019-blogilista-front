@@ -2,8 +2,8 @@ import axios from "axios"
 const baseUrl = "/api/login"
 
 const SET_USER = "SET_USER"
-const USER_FROM_STORAGE = "USER_FROM_STORAGE"
 const LOG_OUT = "LOG_OUT"
+const LOGIN_FAILURE = "LOGIN_FAILURE"
 
 export const setUser = user => {
 	return {
@@ -18,36 +18,35 @@ export const logOut = () => {
 	}
 }
 
-export const userFromStorage = () => {
+export const loginFailure = error => {
 	return {
-		type: USER_FROM_STORAGE
+		type: LOGIN_FAILURE,
+		error
 	}
 }
 
 export const logIn = credentials => {
 	return async dispatch => {
-		const response = await axios.post(baseUrl, credentials)
-		const user = response.data
-		dispatch(setUser(user))
+		try {
+			const response = await axios.post(baseUrl, credentials)
+			const user = response.data
+			dispatch(setUser(user))
+		} catch (error) {
+			dispatch(loginFailure(error))
+		}
 	}
 }
 
-const loginReducer = (state = null, action) => {
+const loginReducer = (state = { user: null, error: null }, action) => {
 	switch (action.type) {
-		case USER_FROM_STORAGE: {
-			const loggedUserJSON = window.localStorage.getItem("loggedBlogappUser")
-			return loggedUserJSON ? JSON.parse(loggedUserJSON) : state
-		}
 		case SET_USER: {
-			window.localStorage.setItem(
-				"loggedBlogappUser",
-				JSON.stringify(action.user)
-			)
-			return action.user
+			return { user: action.user, error: null }
 		}
 		case LOG_OUT: {
-			window.localStorage.removeItem("loggedBlogappUser")
-			return null
+			return { user: null, error: null }
+		}
+		case LOGIN_FAILURE: {
+			return { user: null, error: action.exception }
 		}
 		default:
 			return state
