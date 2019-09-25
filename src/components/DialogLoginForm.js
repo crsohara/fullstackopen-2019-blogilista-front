@@ -44,10 +44,10 @@ const DialogLoginForm = ({
 				/>
 			</DialogContent>
 			<DialogActions>
-				<Button onClick={handleClose} color="primary">
+				<Button onClick={handleClose} color="primary" data-cy="cancel">
 					Peruuta
 				</Button>
-				<Button onClick={handleLogin} color="primary">
+				<Button onClick={handleLogin} color="primary" data-cy="login">
 					Kirjaudu
 				</Button>
 			</DialogActions>

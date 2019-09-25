@@ -9,7 +9,7 @@ import Togglable from "../components/Togglable"
 import NewBlogForm from "../components/NewBlogForm"
 import { initializeBlogs } from "../reducers/blogReducer"
 
-const Blogs = ({ blogs }) => {
+const Blogs = ({ blogs, user }) => {
 	const newBlogFormRef = React.createRef()
 
 	const newBlogForm = () => {
@@ -27,7 +27,7 @@ const Blogs = ({ blogs }) => {
 				Blogit
 			</Typography>
 
-			{newBlogForm()}
+			{user.user ? newBlogForm() : null}
 
 			<List id="blogs">
 				{blogs.map(blog => {
@@ -50,7 +50,8 @@ const mapDispatchToProps = {
 
 const mapStateToProps = state => {
 	return {
-		blogs: state.blogs.blogs
+		blogs: state.blogs.blogs,
+		user: state.user
 	}
 }
 
@@ -61,7 +62,8 @@ const ConnectedBlogs = connect(
 
 Blogs.propTypes = {
 	initializeBlogs: PropTypes.func,
-	blogs: PropTypes.array
+	blogs: PropTypes.array,
+	user: PropTypes.object
 }
 
 export default ConnectedBlogs
