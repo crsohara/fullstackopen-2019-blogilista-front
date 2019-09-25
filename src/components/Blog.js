@@ -124,7 +124,11 @@ const Blog = ({
 					{blog.url}
 					<br />
 					{blog.likes} tykkäystä{" "}
-					<Button color="primary" onClick={handleLikeButton}>
+					<Button
+						data-cy="likeButton"
+						color="primary"
+						onClick={handleLikeButton}
+					>
 						Tykkää
 					</Button>
 					<br />
@@ -138,10 +142,12 @@ const Blog = ({
 					Kommentit
 				</Typography>
 				<form onSubmit={addComment}>
-					<input {...commentForm} />
-					<button type="submit">Kommentoi</button>
+					<input data-cy="commentText" {...commentForm} />
+					<button data-cy="submitComment" type="submit">
+						Kommentoi
+					</button>
 				</form>
-				<ul>{comments}</ul>
+				<ul id="comments">{comments}</ul>
 			</div>
 		</div>
 	)
